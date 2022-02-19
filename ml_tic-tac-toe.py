@@ -1,36 +1,42 @@
 import random
 
 def minimax(position,depth,maximizer):
+    print("here")
     tic_tac_toe2.update_board(position)
     print(tic_tac_toe2.board)
     if tic_tac_toe2.is_player_win("X"):
-        return 1
+        return [1]
     elif tic_tac_toe2.is_player_win("O"):
-        return -1
+        return [-1]
     elif depth == 0:
-        return 0
+        return [0]
     elif tic_tac_toe2.is_board_filled():
-        return 0
+        return [0]
     if maximizer:
         vmax=-2
         for i in range(len(tic_tac_toe2.board)):
             for j in range(len(tic_tac_toe2.board[0])):
                 if tic_tac_toe2.board[i][j] == "-":
                     tic_tac_toe2.fix_spot(i,j,"X")
-                    value = minimax(tic_tac_toe2.board,depth-1,False)
+                    value = minimax(tic_tac_toe2.board,depth-1,False)[0]
                     vmax = max(vmax,value)
+                    if value >= vmax:
+                        move=[i,j]
                     tic_tac_toe2.fix_spot(i,j,"-")
-        return vmax
+        return [vmax,move[0]+1,move[1]+1]
     else:
         vmin=2
         for i in range(len(tic_tac_toe2.board)):
             for j in range(len(tic_tac_toe2.board[0])):
                 if tic_tac_toe2.board[i][j] == "-":
                     tic_tac_toe2.fix_spot(i,j,"O")
-                    value = minimax(tic_tac_toe2.board,depth-1,True)
+                    value = minimax(tic_tac_toe2.board,depth-1,True)[0]
                     vmin = min(vmin,value)
+                    if value <= vmin:
+                        move=[i,j]
                     tic_tac_toe2.fix_spot(i,j,"-")
-        return vmin
+        return [vmin,move[0]+1,move[1]+1]
+
 
 class TicTacToe:
 
