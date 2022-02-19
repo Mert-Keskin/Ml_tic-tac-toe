@@ -1,11 +1,45 @@
-from json.encoder import INFINITY
 import random
+
+def minimax(position,depth,maximizer):
+    tic_tac_toe2.update_board(position)
+    print(tic_tac_toe2.board)
+    if tic_tac_toe2.is_player_win("X"):
+        return 1
+    elif tic_tac_toe2.is_player_win("O"):
+        return -1
+    elif depth == 0:
+        return 0
+    elif tic_tac_toe2.is_board_filled():
+        return 0
+    if maximizer:
+        vmax=-2
+        for i in range(len(tic_tac_toe2.board)):
+            for j in range(len(tic_tac_toe2.board[0])):
+                if tic_tac_toe2.board[i][j] == "-":
+                    tic_tac_toe2.fix_spot(i,j,"X")
+                    value = minimax(tic_tac_toe2.board,depth-1,False)
+                    vmax = max(vmax,value)
+                    tic_tac_toe2.fix_spot(i,j,"-")
+        return vmax
+    else:
+        vmin=2
+        for i in range(len(tic_tac_toe2.board)):
+            for j in range(len(tic_tac_toe2.board[0])):
+                if tic_tac_toe2.board[i][j] == "-":
+                    tic_tac_toe2.fix_spot(i,j,"O")
+                    value = minimax(tic_tac_toe2.board,depth-1,True)
+                    vmin = min(vmin,value)
+                    tic_tac_toe2.fix_spot(i,j,"-")
+        return vmin
 
 class TicTacToe:
 
     def __init__(self):
         self.board = []
 
+    def update_board(self,position):
+        self.board = position
+    
     def create_board(self):
         for i in range(3):
             row = []
@@ -106,6 +140,11 @@ class TicTacToe:
 
             # swapping the turn
             player = self.swap_player_turn(player)
+            
+            if player == "X":
+                print(minimax(self.board,5,True))
+            else:
+                print(minimax(self.board,5,False))
 
         # showing the final view of board
         print()
@@ -114,25 +153,6 @@ class TicTacToe:
 
 # starting the game
 tic_tac_toe = TicTacToe()
+tic_tac_toe2 = TicTacToe()
 tic_tac_toe.start()
 
-def minimax(position,depth,maximizer):
-    if tic_tac_toe.is_player_win("X"):
-        return 1
-    elif tic_tac_toe.is_player_win("O"):
-        return -1
-    elif depth == 0:
-        return 0
-    elif tic_tac_toe.is_board_filled():
-        return 0
-    if maximizer:
-        vmax=-INFINITY
-        value = minimax(position,depth-1,False)
-        vmax = max(vmax,value)
-        return vmax
-    else:
-        vmin=INFINITY
-        value = minimax(position,depth-1,True)
-        vmin = min(vmin,value)
-        return vmin
-    
