@@ -1,6 +1,6 @@
 import random
 
-def minimax(position,depth,maximizer):
+def minimax(position,depth,alpha,betha,maximizer):
     tic_tac_toe2.update_board(position)
     if tic_tac_toe2.is_player_win("X"):
         return [1]
@@ -16,10 +16,13 @@ def minimax(position,depth,maximizer):
             for j in range(len(tic_tac_toe2.board[0])):
                 if tic_tac_toe2.board[i][j] == "-":
                     tic_tac_toe2.fix_spot(i,j,"X")
-                    value = minimax(tic_tac_toe2.board,depth-1,False)[0]
+                    value = minimax(tic_tac_toe2.board,depth-1,alpha,betha,False)[0]
                     vmax = max(vmax,value)
+                    alpha = max(alpha,value)
                     if value >= vmax:
                         move=[i,j]
+                    if betha <= alpha:
+                        break
                     tic_tac_toe2.fix_spot(i,j,"-")
         return [vmax,move[0]+1,move[1]+1]
     else:
@@ -28,10 +31,13 @@ def minimax(position,depth,maximizer):
             for j in range(len(tic_tac_toe2.board[0])):
                 if tic_tac_toe2.board[i][j] == "-":
                     tic_tac_toe2.fix_spot(i,j,"O")
-                    value = minimax(tic_tac_toe2.board,depth-1,True)[0]
+                    value = minimax(tic_tac_toe2.board,depth-1,alpha,betha,True)[0]
                     vmin = min(vmin,value)
+                    betha = min(betha,value)
                     if value <= vmin:
                         move=[i,j]
+                    if betha <= alpha:
+                        break
                     tic_tac_toe2.fix_spot(i,j,"-")
         return [vmin,move[0]+1,move[1]+1]
 
@@ -150,11 +156,11 @@ class TicTacToe:
             player = self.swap_player_turn(player)
             
             if player == "X":
-                move = minimax(self.board,9,True)
+                move = minimax(self.board,9,-2,2,True)
                 self.fix_spot(move[1]-1, move[2]-1, player)
                 player = self.swap_player_turn(player)
             else:
-                move = minimax(self.board,9,False)
+                move = minimax(self.board,9,-2,2,False)
                 self.fix_spot(move[1]-1, move[2]-1, player)
                 player = self.swap_player_turn(player)
 
