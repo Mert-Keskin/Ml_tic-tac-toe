@@ -1,6 +1,5 @@
 import random
-
-def minimax(position,depth,alpha,betha,maximizer):
+def minimax(position,depth,maximizer):
     tic_tac_toe2.update_board(position)
     if tic_tac_toe2.is_player_win("X"):
         return [1]
@@ -15,14 +14,11 @@ def minimax(position,depth,alpha,betha,maximizer):
         for i in range(len(tic_tac_toe2.board)):
             for j in range(len(tic_tac_toe2.board[0])):
                 if tic_tac_toe2.board[i][j] == "-":
-                    tic_tac_toe2.fix_spot(i,j,"X")
-                    value = minimax(tic_tac_toe2.board,depth-1,alpha,betha,False)[0]
+                    tic_tac_toe2.fix_spot(i,j, "X")
+                    value = minimax(tic_tac_toe2.board,depth-1,False)[0]
                     vmax = max(vmax,value)
-                    alpha = max(alpha,value)
                     if value >= vmax:
                         move=[i,j]
-                    if betha <= alpha:
-                        break
                     tic_tac_toe2.fix_spot(i,j,"-")
         return [vmax,move[0]+1,move[1]+1]
     else:
@@ -31,13 +27,10 @@ def minimax(position,depth,alpha,betha,maximizer):
             for j in range(len(tic_tac_toe2.board[0])):
                 if tic_tac_toe2.board[i][j] == "-":
                     tic_tac_toe2.fix_spot(i,j,"O")
-                    value = minimax(tic_tac_toe2.board,depth-1,alpha,betha,True)[0]
+                    value = minimax(tic_tac_toe2.board,depth-1,True)[0]
                     vmin = min(vmin,value)
-                    betha = min(betha,value)
                     if value <= vmin:
                         move=[i,j]
-                    if betha <= alpha:
-                        break
                     tic_tac_toe2.fix_spot(i,j,"-")
         return [vmin,move[0]+1,move[1]+1]
 
@@ -130,7 +123,6 @@ class TicTacToe:
 
             self.show_board()
 
-            # taking user input
             row, col = list(
                 map(int, input("Enter row and column numbers to fix spot: ").split()))
             print()
@@ -156,23 +148,35 @@ class TicTacToe:
             player = self.swap_player_turn(player)
             
             if player == "X":
-                move = minimax(self.board,9,-2,2,True)
+                move = minimax(self.board,9,True)
                 self.fix_spot(move[1]-1, move[2]-1, player)
+                # checking whether current player is won or not
+                if self.is_player_win(player):
+                    print(f"Player {player} wins the game!")
+                    break
+
+                # checking whether the game is draw or not
+                if self.is_board_filled():
+                    print("Match Draw!")
+                    break
+
                 player = self.swap_player_turn(player)
+
             else:
-                move = minimax(self.board,9,-2,2,False)
+                move = minimax(self.board,9,False)
                 self.fix_spot(move[1]-1, move[2]-1, player)
+                # checking whether current player is won or not
+                if self.is_player_win(player):
+                    print(f"Player {player} wins the game!")
+                    break
+
+                # checking whether the game is draw or not
+                if self.is_board_filled():
+                    print("Match Draw!")
+                    break
                 player = self.swap_player_turn(player)
+                
 
-            # checking whether current player is won or not
-            if self.is_player_win(player):
-                print(f"Player {player} wins the game!")
-                break
-
-            # checking whether the game is draw or not
-            if self.is_board_filled():
-                print("Match Draw!")
-                break
 
         # showing the final view of board
         print()
@@ -183,4 +187,3 @@ class TicTacToe:
 tic_tac_toe = TicTacToe()
 tic_tac_toe2 = TicTacToe()
 tic_tac_toe.start()
-
